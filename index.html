@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>扫雷 Minesweeper</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2b6cb0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="扫雷">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game">
+    <h1>扫雷 Minesweeper</h1>
+
+    <div class="toolbar">
+      <div class="difficulty" id="difficulty">
+        <button class="diff-btn active" data-level="beginner">初级 9×9</button>
+        <button class="diff-btn" data-level="intermediate">中级 16×16</button>
+        <button class="diff-btn" data-level="expert">高级 16×30</button>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div class="counter" id="mine-counter">010</div>
+      <button class="face-btn" id="reset-btn" title="重新开始">🙂</button>
+      <div class="counter" id="timer">000</div>
+    </div>
+
+    <div class="board-wrap">
+      <div class="board" id="board"></div>
+    </div>
+
+    <p class="hint">左键：翻开　|　右键（长按）：插旗</p>
+  </div>
+
+<script src="script.js"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+</script>
+</body>
+</html>
