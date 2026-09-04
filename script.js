@@ -7,13 +7,44 @@
     expert: { rows: 16, cols: 30, mines: 99 }
   };
 
+  var I18N = {
+    zh: {
+      htmlLang: "zh-CN",
+      pageTitle: "扫雷 Minesweeper",
+      heading: "扫雷 Minesweeper",
+      beginner: "初级 9×9",
+      intermediate: "中级 16×16",
+      expert: "高级 16×30",
+      resetTitle: "重新开始",
+      hint: "左键：翻开　|　右键（长按）：插旗",
+      langBtn: "EN",
+      langBtnTitle: "切换到英文"
+    },
+    en: {
+      htmlLang: "en",
+      pageTitle: "Minesweeper",
+      heading: "Minesweeper",
+      beginner: "Beginner 9×9",
+      intermediate: "Intermediate 16×16",
+      expert: "Expert 16×30",
+      resetTitle: "Restart",
+      hint: "Left click: reveal  |  Right click / long-press: flag",
+      langBtn: "中文",
+      langBtnTitle: "Switch to Chinese"
+    }
+  };
+
   var boardEl = document.getElementById("board");
   var mineCounterEl = document.getElementById("mine-counter");
   var timerEl = document.getElementById("timer");
   var resetBtn = document.getElementById("reset-btn");
   var diffButtons = document.querySelectorAll(".diff-btn");
+  var headingEl = document.getElementById("heading");
+  var hintEl = document.getElementById("hint");
+  var langBtn = document.getElementById("lang-btn");
 
   var state = {
+    lang: "zh",
     level: "beginner",
     rows: 0,
     cols: 0,
@@ -330,6 +361,35 @@
     resetBtn.textContent = emoji;
   }
 
+  function detectInitialLang() {
+    try {
+      var saved = localStorage.getItem("ms-lang");
+      if (saved === "zh" || saved === "en") return saved;
+    } catch (e) {}
+    var nav = (navigator.language || navigator.userLanguage || "").toLowerCase();
+    return nav.indexOf("zh") === 0 ? "zh" : "en";
+  }
+
+  function applyLanguage() {
+    var t = I18N[state.lang];
+    document.documentElement.lang = t.htmlLang;
+    document.title = t.pageTitle;
+    headingEl.textContent = t.heading;
+    hintEl.textContent = t.hint;
+    resetBtn.title = t.resetTitle;
+    langBtn.textContent = t.langBtn;
+    langBtn.title = t.langBtnTitle;
+    diffButtons.forEach(function (btn) {
+      btn.textContent = t[btn.dataset.level];
+    });
+  }
+
+  function setLanguage(lang) {
+    state.lang = lang;
+    try { localStorage.setItem("ms-lang", lang); } catch (e) {}
+    applyLanguage();
+  }
+
   resetBtn.addEventListener("click", function () {
     init(state.level);
   });
@@ -342,5 +402,10 @@
     });
   });
 
+  langBtn.addEventListener("click", function () {
+    setLanguage(state.lang === "zh" ? "en" : "zh");
+  });
+
+  setLanguage(detectInitialLang());
   init(state.level);
 })();

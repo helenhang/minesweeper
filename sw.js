@@ -1,4 +1,4 @@
-var CACHE_NAME = "minesweeper-v1";
+var CACHE_NAME = "minesweeper-v2";
 var ASSETS = [
   "./index.html",
   "./style.css",

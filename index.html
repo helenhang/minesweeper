@@ -15,7 +15,10 @@
 </head>
 <body>
   <div class="game">
-    <h1>扫雷 Minesweeper</h1>
+    <div class="top-row">
+      <h1 id="heading">扫雷 Minesweeper</h1>
+      <button class="lang-btn" id="lang-btn" title="Switch language">EN</button>
+    </div>
 
     <div class="toolbar">
       <div class="difficulty" id="difficulty">
@@ -35,7 +38,7 @@
       <div class="board" id="board"></div>
     </div>
 
-    <p class="hint">左键：翻开　|　右键（长按）：插旗</p>
+    <p class="hint" id="hint">左键：翻开　|　右键（长按）：插旗</p>
   </div>
 
 <script src="script.js"></script>

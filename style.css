@@ -34,11 +34,37 @@ body {
   max-width: 100%;
 }
 
+.top-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  position: relative;
+}
+
 h1 {
   text-align: center;
-  margin: 4px 0 14px;
+  margin: 4px 0;
   font-size: 22px;
   color: #333;
+}
+
+.lang-btn {
+  position: absolute;
+  right: 0;
+  border: 2px solid var(--cell-border-dark);
+  background: var(--cell-bg);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #333;
+}
+
+.lang-btn:hover {
+  background: #cfcfcf;
 }
 
 .toolbar {
