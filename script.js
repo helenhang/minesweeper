@@ -121,7 +121,8 @@
       longPressed = false;
       timer = setTimeout(function () {
         longPressed = true;
-        toggleFlag(parseInt(cell.dataset.r, 10), parseInt(cell.dataset.c, 10));
+        var flagged = toggleFlag(parseInt(cell.dataset.r, 10), parseInt(cell.dataset.c, 10));
+        if (flagged) vibrate(35);
       }, 450);
     }, { passive: true });
 
@@ -151,11 +152,11 @@
   }
 
   function toggleFlag(r, c) {
-    if (state.over) return;
+    if (state.over) return false;
     var cell = state.grid[r][c];
-    if (cell.revealed) return;
+    if (cell.revealed) return false;
 
-    if (!cell.flagged && state.flagsUsed >= state.mines) return;
+    if (!cell.flagged && state.flagsUsed >= state.mines) return false;
 
     cell.flagged = !cell.flagged;
     state.flagsUsed += cell.flagged ? 1 : -1;
@@ -164,6 +165,13 @@
     var el = state.cellEls[r][c];
     el.classList.toggle("flag", cell.flagged);
     el.textContent = cell.flagged ? "🚩" : "";
+    return true;
+  }
+
+  function vibrate(pattern) {
+    try {
+      if (navigator.vibrate) navigator.vibrate(pattern);
+    } catch (e) {}
   }
 
   function handleReveal(r, c) {
