@@ -1,4 +1,4 @@
-var CACHE_NAME = "minesweeper-v4";
+var CACHE_NAME = "minesweeper-v5";
 var ASSETS = [
   "./index.html",
   "./style.css",
@@ -33,20 +33,22 @@ self.addEventListener("activate", function (event) {
 
 self.addEventListener("fetch", function (event) {
   if (event.request.method !== "GET") return;
+  // Network-first: always try to get the latest file when online, so
+  // updates show up immediately. Only fall back to the cache when
+  // offline (or the network request fails).
   event.respondWith(
-    caches.match(event.request).then(function (cached) {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then(function (response) {
-          var copy = response.clone();
-          caches.open(CACHE_NAME).then(function (cache) {
-            cache.put(event.request, copy);
-          });
-          return response;
-        })
-        .catch(function () {
-          return caches.match("./index.html");
+    fetch(event.request)
+      .then(function (response) {
+        var copy = response.clone();
+        caches.open(CACHE_NAME).then(function (cache) {
+          cache.put(event.request, copy);
         });
-    })
+        return response;
+      })
+      .catch(function () {
+        return caches.match(event.request).then(function (cached) {
+          return cached || caches.match("./index.html");
+        });
+      })
   );
 });
