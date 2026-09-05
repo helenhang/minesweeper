@@ -1,4 +1,4 @@
-var CACHE_NAME = "minesweeper-v5";
+var CACHE_NAME = "minesweeper-v6";
 var ASSETS = [
   "./index.html",
   "./style.css",
@@ -37,7 +37,7 @@ self.addEventListener("fetch", function (event) {
   // updates show up immediately. Only fall back to the cache when
   // offline (or the network request fails).
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: "no-store" })
       .then(function (response) {
         var copy = response.clone();
         caches.open(CACHE_NAME).then(function (cache) {

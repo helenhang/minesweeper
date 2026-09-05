@@ -7,31 +7,39 @@
   --board-border: #7b7b7b;
   --accent: #2b6cb0;
   --mine-red: #d32f2f;
+  --cell-size: 28px;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
-  align-items: flex-start;
   justify-content: center;
   background: linear-gradient(180deg, #eef1f5, #dfe3e8);
   font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  padding: 24px 12px;
+  padding: 0;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
 
 .game {
   background: var(--bg);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  max-width: 100%;
+  width: 100%;
+  max-width: 560px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
 }
 
 .top-row {
@@ -41,6 +49,7 @@ body {
   gap: 10px;
   margin-bottom: 14px;
   position: relative;
+  flex-shrink: 0;
 }
 
 h1 {
@@ -71,25 +80,38 @@ h1 {
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .difficulty {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   background: #b6b6b6;
   padding: 4px;
   border-radius: 8px;
+  max-width: 100%;
+  justify-content: center;
 }
 
 .diff-btn {
   border: none;
-  padding: 6px 12px;
+  padding: 6px 10px;
   border-radius: 6px;
   background: transparent;
   cursor: pointer;
   font-size: 13px;
+  white-space: nowrap;
   color: #333;
   transition: background 0.15s, color 0.15s;
+}
+
+@media (max-width: 380px) {
+  .diff-btn {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
 }
 
 .diff-btn:hover {
@@ -111,6 +133,7 @@ h1 {
   padding: 8px 10px;
   border-radius: 6px;
   margin-bottom: 10px;
+  flex-shrink: 0;
 }
 
 .counter {
@@ -144,9 +167,12 @@ h1 {
 }
 
 .board-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: auto;
   max-width: 100%;
   display: flex;
+  align-items: center;
   justify-content: center;
 }
 
@@ -157,18 +183,19 @@ h1 {
   border: 4px solid;
   border-color: var(--cell-border-dark) var(--cell-border-light) var(--cell-border-light) var(--cell-border-dark);
   width: max-content;
+  margin: auto;
 }
 
 .cell {
-  width: 28px;
-  height: 28px;
+  width: var(--cell-size);
+  height: var(--cell-size);
   background: var(--cell-bg);
   border: 3px solid;
   border-color: var(--cell-border-light) var(--cell-border-dark) var(--cell-border-dark) var(--cell-border-light);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: calc(var(--cell-size) * 0.5);
   font-weight: 700;
   cursor: pointer;
   user-select: none;
@@ -193,7 +220,7 @@ h1 {
 }
 
 .cell.flag {
-  font-size: 14px;
+  font-size: calc(var(--cell-size) * 0.5);
 }
 
 .cell.flag-pulse {
@@ -222,14 +249,10 @@ h1 {
   color: #555;
   font-size: 12px;
   margin: 12px 0 2px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 480px) {
-  .cell {
-    width: 24px;
-    height: 24px;
-    font-size: 12px;
-  }
   h1 {
     font-size: 18px;
   }

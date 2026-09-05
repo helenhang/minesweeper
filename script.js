@@ -89,9 +89,36 @@
     renderBoard();
   }
 
+  var CELL_MIN = 16;
+  var CELL_MAX = 64;
+  var boardWrapEl = document.querySelector(".board-wrap");
+
+  function fitBoardCells() {
+    if (!state.cols || !state.rows) return;
+    var availW = boardWrapEl.clientWidth;
+    var availH = boardWrapEl.clientHeight;
+    if (!availW || !availH) return;
+
+    var byWidth = Math.floor(availW / state.cols);
+    var byHeight = Math.floor(availH / state.rows);
+    var size = Math.max(CELL_MIN, Math.min(CELL_MAX, byWidth, byHeight));
+
+    document.documentElement.style.setProperty("--cell-size", size + "px");
+  }
+
+  var resizeTimer = null;
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitBoardCells, 100);
+  });
+  window.addEventListener("orientationchange", function () {
+    setTimeout(fitBoardCells, 150);
+  });
+
   function renderBoard() {
+    fitBoardCells();
     boardEl.innerHTML = "";
-    boardEl.style.gridTemplateColumns = "repeat(" + state.cols + ", 28px)";
+    boardEl.style.gridTemplateColumns = "repeat(" + state.cols + ", var(--cell-size))";
     state.cellEls = [];
 
     for (var r = 0; r < state.rows; r++) {
