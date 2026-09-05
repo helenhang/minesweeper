@@ -104,6 +104,9 @@
 
         cell.addEventListener("click", onLeftClick);
         cell.addEventListener("contextmenu", onRightClick);
+        cell.addEventListener("animationend", function (e) {
+          if (e.animationName === "flagPulse") e.currentTarget.classList.remove("flag-pulse");
+        });
         attachLongPress(cell);
 
         boardEl.appendChild(cell);
@@ -165,7 +168,14 @@
     var el = state.cellEls[r][c];
     el.classList.toggle("flag", cell.flagged);
     el.textContent = cell.flagged ? "🚩" : "";
+    pulseCell(el);
     return true;
+  }
+
+  function pulseCell(el) {
+    el.classList.remove("flag-pulse");
+    void el.offsetWidth; // force reflow so the animation restarts if it's still running
+    el.classList.add("flag-pulse");
   }
 
   function vibrate(pattern) {

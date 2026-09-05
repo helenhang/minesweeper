@@ -196,6 +196,18 @@ h1 {
   font-size: 14px;
 }
 
+.cell.flag-pulse {
+  position: relative;
+  z-index: 2;
+  animation: flagPulse 260ms ease;
+}
+
+@keyframes flagPulse {
+  0% { transform: scale(1); background-color: var(--cell-bg); }
+  35% { transform: scale(1.28); background-color: #ffe58a; }
+  100% { transform: scale(1); background-color: var(--cell-bg); }
+}
+
 .cell[data-n="1"] { color: #1565c0; }
 .cell[data-n="2"] { color: #2e7d32; }
 .cell[data-n="3"] { color: #c62828; }
