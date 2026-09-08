@@ -202,22 +202,68 @@
 
   var audioCtx = null;
 
-  function playClickSound(flaggedOn) {
-    // Devices without a Taptic Engine (iPad) can't do haptics — a short
-    // synthesized click gives the same "did that register?" feedback.
-    try {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === "suspended") audioCtx.resume();
+  // Devices without a Taptic Engine (iPad) can't do haptics — short
+  // synthesized sound effects give the same "did that register?" feedback.
+  // No audio files needed, everything below is generated on the fly.
 
-      var osc = audioCtx.createOscillator();
-      var gain = audioCtx.createGain();
-      osc.type = "square";
-      osc.frequency.setValueAtTime(flaggedOn ? 880 : 660, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.09);
-      osc.connect(gain).connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.09);
+  function ensureAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }
+
+  function playTone(freq, duration, type, volume, delay) {
+    try {
+      var ctx = ensureAudioCtx();
+      var t = ctx.currentTime + (delay || 0);
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = type || "sine";
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(volume, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + duration);
+    } catch (e) {}
+  }
+
+  function playClickSound(flaggedOn) {
+    playTone(flaggedOn ? 880 : 660, 0.09, "square", 0.12);
+  }
+
+  function playRevealSound() {
+    playTone(520, 0.05, "sine", 0.08);
+  }
+
+  function playResetSound() {
+    playTone(500, 0.07, "triangle", 0.1);
+  }
+
+  function playWinSound() {
+    // A short rising arpeggio (C5, E5, G5) for a cheerful "ta-da".
+    playTone(523.25, 0.22, "sine", 0.14, 0);
+    playTone(659.25, 0.22, "sine", 0.14, 0.12);
+    playTone(783.99, 0.3, "sine", 0.14, 0.24);
+  }
+
+  function playExplosionSound() {
+    try {
+      var ctx = ensureAudioCtx();
+      var duration = 0.35;
+      var bufferSize = Math.floor(ctx.sampleRate * duration);
+      var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      var data = buffer.getChannelData(0);
+      for (var i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+      }
+      var noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      var gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      noise.connect(gain).connect(ctx.destination);
+      noise.start();
     } catch (e) {}
   }
 
@@ -256,10 +302,12 @@
 
     if (cell.mine) {
       revealAllMines(r, c);
+      playExplosionSound();
       endGame(false);
       return;
     }
 
+    playRevealSound();
     floodReveal(r, c);
     checkWin();
   }
@@ -399,6 +447,7 @@
     state.won = won;
     stopTimer();
     setFace(won ? "😎" : "😵");
+    if (won) playWinSound();
   }
 
   function updateMineCounter() {
@@ -468,6 +517,7 @@
   }
 
   resetBtn.addEventListener("click", function () {
+    playResetSound();
     init(state.level);
   });
 
