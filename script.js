@@ -196,7 +196,29 @@
     el.classList.toggle("flag", cell.flagged);
     el.textContent = cell.flagged ? "🚩" : "";
     pulseCell(el);
+    playClickSound(cell.flagged);
     return true;
+  }
+
+  var audioCtx = null;
+
+  function playClickSound(flaggedOn) {
+    // Devices without a Taptic Engine (iPad) can't do haptics — a short
+    // synthesized click gives the same "did that register?" feedback.
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(flaggedOn ? 880 : 660, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.09);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.09);
+    } catch (e) {}
   }
 
   function pulseCell(el) {
