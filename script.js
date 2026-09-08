@@ -171,7 +171,11 @@
   function onLeftClick(e) {
     var r = parseInt(e.currentTarget.dataset.r, 10);
     var c = parseInt(e.currentTarget.dataset.c, 10);
-    handleReveal(r, c);
+    if (state.grid[r][c].revealed) {
+      attemptChord(r, c);
+    } else {
+      handleReveal(r, c);
+    }
   }
 
   function onRightClick(e) {
@@ -309,6 +313,43 @@
 
     playRevealSound();
     floodReveal(r, c);
+    checkWin();
+  }
+
+  // "Chording": tapping an already-revealed numbered cell whose flagged
+  // neighbor count matches its number reveals all of its remaining
+  // unflagged neighbors at once. Classic Minesweeper batch-reveal — same
+  // risk as the real thing: if a flag is wrong, this can hit a mine.
+  function attemptChord(r, c) {
+    if (state.over) return;
+    var cell = state.grid[r][c];
+    if (!cell.revealed || cell.adjacent === 0) return;
+
+    var flagCount = 0;
+    var targets = [];
+    forEachNeighbor(r, c, function (nr, nc) {
+      var n = state.grid[nr][nc];
+      if (n.flagged) flagCount++;
+      else if (!n.revealed) targets.push([nr, nc]);
+    });
+
+    if (flagCount !== cell.adjacent || !targets.length) return;
+
+    for (var i = 0; i < targets.length; i++) {
+      var t = targets[i];
+      if (state.grid[t[0]][t[1]].mine) {
+        revealAllMines(t[0], t[1]);
+        playExplosionSound();
+        endGame(false);
+        return;
+      }
+    }
+
+    playRevealSound();
+    for (var j = 0; j < targets.length; j++) {
+      var pos = targets[j];
+      if (!state.grid[pos[0]][pos[1]].revealed) floodReveal(pos[0], pos[1]);
+    }
     checkWin();
   }
 
