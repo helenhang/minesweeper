@@ -16,7 +16,7 @@
       intermediate: "中级 16×16",
       expert: "高级 16×30",
       resetTitle: "重新开始",
-      hint: "左键：翻开　|　右键（长按）：插旗",
+      hint: "左键：翻开　|　右键/长按：插旗　|　双击数字：批量展开",
       langBtn: "EN",
       langBtnTitle: "切换到英文"
     },
@@ -28,7 +28,7 @@
       intermediate: "Intermediate 16×16",
       expert: "Expert 16×30",
       resetTitle: "Restart",
-      hint: "Left click: reveal  |  Right click / long-press: flag",
+      hint: "Left click: reveal  |  Right/long-press: flag  |  Double-click number: chord",
       langBtn: "中文",
       langBtnTitle: "Switch to Chinese"
     }
@@ -130,6 +130,7 @@
         cell.dataset.c = c;
 
         cell.addEventListener("click", onLeftClick);
+        cell.addEventListener("dblclick", onDoubleClick);
         cell.addEventListener("contextmenu", onRightClick);
         cell.addEventListener("animationend", function (e) {
           if (e.animationName === "flagPulse") e.currentTarget.classList.remove("flag-pulse");
@@ -143,9 +144,12 @@
     }
   }
 
+  var DOUBLE_TAP_MS = 300;
+
   function attachLongPress(cell) {
     var timer = null;
     var longPressed = false;
+    var lastTapTime = 0;
 
     cell.addEventListener("touchstart", function (e) {
       longPressed = false;
@@ -160,6 +164,16 @@
       if (timer) clearTimeout(timer);
       if (longPressed) {
         e.preventDefault();
+        return;
+      }
+
+      var now = Date.now();
+      if (now - lastTapTime < DOUBLE_TAP_MS) {
+        lastTapTime = 0;
+        e.preventDefault();
+        attemptChord(parseInt(cell.dataset.r, 10), parseInt(cell.dataset.c, 10));
+      } else {
+        lastTapTime = now;
       }
     });
 
@@ -171,11 +185,13 @@
   function onLeftClick(e) {
     var r = parseInt(e.currentTarget.dataset.r, 10);
     var c = parseInt(e.currentTarget.dataset.c, 10);
-    if (state.grid[r][c].revealed) {
-      attemptChord(r, c);
-    } else {
-      handleReveal(r, c);
-    }
+    handleReveal(r, c);
+  }
+
+  function onDoubleClick(e) {
+    var r = parseInt(e.currentTarget.dataset.r, 10);
+    var c = parseInt(e.currentTarget.dataset.c, 10);
+    attemptChord(r, c);
   }
 
   function onRightClick(e) {
