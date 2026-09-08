@@ -93,10 +93,12 @@
   var CELL_MAX = 64;
   var boardWrapEl = document.querySelector(".board-wrap");
 
+  var BOARD_EDGE_MARGIN = 16; // keep a sliver of background visible around the board so its border reads as an edge, not a screen crop
+
   function fitBoardCells() {
     if (!state.cols || !state.rows) return;
-    var availW = boardWrapEl.clientWidth;
-    var availH = boardWrapEl.clientHeight;
+    var availW = boardWrapEl.clientWidth - BOARD_EDGE_MARGIN;
+    var availH = boardWrapEl.clientHeight - BOARD_EDGE_MARGIN;
     if (!availW || !availH) return;
 
     var byWidth = Math.floor(availW / state.cols);
