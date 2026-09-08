@@ -206,6 +206,16 @@
   }
 
   function vibrate(pattern) {
+    // Inside the native iOS app (Capacitor), use real haptics — iOS Safari's
+    // web engine has no navigator.vibrate support at all, native does.
+    try {
+      var cap = window.Capacitor;
+      if (cap && cap.isNativePlatform && cap.isNativePlatform() && cap.Plugins && cap.Plugins.Haptics) {
+        cap.Plugins.Haptics.impact({ style: "MEDIUM" });
+        return;
+      }
+    } catch (e) {}
+
     try {
       if (navigator.vibrate) navigator.vibrate(pattern);
     } catch (e) {}
