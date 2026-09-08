@@ -34,12 +34,24 @@ body {
 .game {
   background: var(--bg);
   width: 100%;
-  max-width: 560px;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+}
+
+/* The board should use the full screen width (that's the whole point on a
+   tablet), but the chrome around it (title, difficulty, status bar) stays
+   a tidy, centered widget instead of stretching edge-to-edge with it. */
+.top-row,
+.toolbar,
+.status-bar,
+.hint {
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .top-row {
@@ -248,7 +260,7 @@ h1 {
   text-align: center;
   color: #555;
   font-size: 12px;
-  margin: 12px 0 2px;
+  margin: 12px auto 2px;
   flex-shrink: 0;
 }
 
