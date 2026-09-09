@@ -41,6 +41,13 @@ body {
   padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
 }
 
+.controls {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex-shrink: 0;
+}
+
 /* The board should use the full screen width (that's the whole point on a
    tablet), but the chrome around it (title, difficulty, status bar) stays
    a tidy, centered widget instead of stretching edge-to-edge with it. */
@@ -275,37 +282,68 @@ h1 {
    Shrink it and drop the hint text so the board (the whole point) gets as
    much of that scarce height as possible — this matters most on Expert. */
 @media (orientation: landscape) and (max-height: 500px) {
+  /* A phone's short edge becomes the height here, and it's small to begin
+     with — stacking the chrome above the board (like portrait does) leaves
+     almost nothing for the board. Put the chrome in a sidebar instead, so
+     the board gets the device's full height, not height-minus-chrome. */
   .game {
-    padding-top: max(6px, env(safe-area-inset-top));
-    padding-bottom: max(6px, env(safe-area-inset-bottom));
+    flex-direction: row;
+    padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right))
+      max(6px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+    gap: 8px;
+  }
+  .controls {
+    width: 132px;
+    max-width: 132px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    gap: 4px;
+  }
+  .top-row,
+  .toolbar,
+  .status-bar {
+    max-width: none;
   }
   .top-row {
-    margin-bottom: 4px;
+    margin-bottom: 0;
   }
   h1 {
-    font-size: 16px;
+    font-size: 14px;
     margin: 2px 0;
   }
+  .lang-btn {
+    position: static;
+    margin-left: auto;
+    padding: 3px 6px;
+    font-size: 10px;
+  }
   .toolbar {
-    margin-bottom: 4px;
+    margin-bottom: 0;
+  }
+  .difficulty {
+    flex-direction: column;
+    width: 100%;
   }
   .diff-btn {
-    padding: 3px 8px;
+    padding: 4px 8px;
     font-size: 11px;
   }
   .status-bar {
-    padding: 4px 8px;
-    margin-bottom: 4px;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px;
+    margin-bottom: 0;
   }
   .counter {
-    font-size: 16px;
+    font-size: 15px;
     padding: 2px 6px;
-    min-width: 40px;
+    min-width: 0;
+    width: 100%;
   }
   .face-btn {
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
+    width: 100%;
+    height: 26px;
+    font-size: 15px;
   }
   .hint {
     display: none;

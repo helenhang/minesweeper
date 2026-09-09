@@ -15,30 +15,32 @@
 </head>
 <body>
   <div class="game">
-    <div class="top-row">
-      <h1 id="heading">扫雷 Minesweeper</h1>
-      <button class="lang-btn" id="lang-btn" title="Switch language">EN</button>
-    </div>
-
-    <div class="toolbar">
-      <div class="difficulty" id="difficulty">
-        <button class="diff-btn active" data-level="beginner">初级 9×9</button>
-        <button class="diff-btn" data-level="intermediate">中级 16×16</button>
-        <button class="diff-btn" data-level="expert">高级 16×30</button>
+    <div class="controls">
+      <div class="top-row">
+        <h1 id="heading">扫雷 Minesweeper</h1>
+        <button class="lang-btn" id="lang-btn" title="Switch language">EN</button>
       </div>
-    </div>
 
-    <div class="status-bar">
-      <div class="counter" id="mine-counter">010</div>
-      <button class="face-btn" id="reset-btn" title="重新开始">🙂</button>
-      <div class="counter" id="timer">000</div>
+      <div class="toolbar">
+        <div class="difficulty" id="difficulty">
+          <button class="diff-btn active" data-level="beginner">初级 9×9</button>
+          <button class="diff-btn" data-level="intermediate">中级 16×16</button>
+          <button class="diff-btn" data-level="expert">高级 16×30</button>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <div class="counter" id="mine-counter">010</div>
+        <button class="face-btn" id="reset-btn" title="重新开始">🙂</button>
+        <div class="counter" id="timer">000</div>
+      </div>
+
+      <p class="hint" id="hint">左键：翻开　|　右键（长按）：插旗</p>
     </div>
 
     <div class="board-wrap">
       <div class="board" id="board"></div>
     </div>
-
-    <p class="hint" id="hint">左键：翻开　|　右键（长按）：插旗</p>
   </div>
 
 <script src="script.js"></script>
