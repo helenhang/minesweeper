@@ -202,7 +202,8 @@ h1 {
   width: var(--cell-size);
   height: var(--cell-size);
   background: var(--cell-bg);
-  border: 3px solid;
+  border-style: solid;
+  border-width: clamp(1px, calc(var(--cell-size) * 0.12), 3px);
   border-color: var(--cell-border-light) var(--cell-border-dark) var(--cell-border-dark) var(--cell-border-light);
   display: flex;
   align-items: center;
@@ -267,5 +268,46 @@ h1 {
 @media (max-width: 480px) {
   h1 {
     font-size: 18px;
+  }
+}
+
+/* Phone in landscape: very little vertical room left after the chrome.
+   Shrink it and drop the hint text so the board (the whole point) gets as
+   much of that scarce height as possible — this matters most on Expert. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .game {
+    padding-top: max(6px, env(safe-area-inset-top));
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+  }
+  .top-row {
+    margin-bottom: 4px;
+  }
+  h1 {
+    font-size: 16px;
+    margin: 2px 0;
+  }
+  .toolbar {
+    margin-bottom: 4px;
+  }
+  .diff-btn {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+  .status-bar {
+    padding: 4px 8px;
+    margin-bottom: 4px;
+  }
+  .counter {
+    font-size: 16px;
+    padding: 2px 6px;
+    min-width: 40px;
+  }
+  .face-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+  .hint {
+    display: none;
   }
 }

@@ -103,7 +103,12 @@
 
     var byWidth = Math.floor(availW / state.cols);
     var byHeight = Math.floor(availH / state.rows);
-    var size = Math.max(CELL_MIN, Math.min(CELL_MAX, byWidth, byHeight));
+    // Never force cells ABOVE what actually fits (that's what caused the
+    // board to overflow its container on Expert on small screens) — only
+    // cap how large cells can get. CELL_MIN is a soft preference used only
+    // when there's room to honor it.
+    var fitSize = Math.min(byWidth, byHeight);
+    var size = fitSize >= CELL_MIN ? Math.min(CELL_MAX, fitSize) : Math.max(1, fitSize);
 
     document.documentElement.style.setProperty("--cell-size", size + "px");
   }
