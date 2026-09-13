@@ -102,12 +102,21 @@
   var CELL_MAX = 64;
   var boardWrapEl = document.querySelector(".board-wrap");
 
-  var BOARD_EDGE_MARGIN = 48; // keep a sliver of background visible around the board so its border reads as an edge, not a screen crop
+  var BOARD_EDGE_MARGIN = 16; // keep a sliver of background visible around the board so its border reads as an edge, not a screen crop
+
+  var GRID_GAP = 1; // matches .board's CSS gap
+  var GRID_BORDER = 8; // matches .board's CSS border (4px × 2 sides)
 
   function fitBoardCells() {
     if (!state.cols || !state.rows) return;
-    var availW = boardWrapEl.clientWidth - BOARD_EDGE_MARGIN;
-    var availH = boardWrapEl.clientHeight - BOARD_EDGE_MARGIN;
+    // The grid's own gaps + outer border take up real space too — leaving
+    // them out of this budget was why the visible margin around the board
+    // shrank unpredictably on bigger boards (more gaps eating into what was
+    // supposed to be reserved margin) instead of staying constant.
+    var overheadW = (state.cols - 1) * GRID_GAP + GRID_BORDER;
+    var overheadH = (state.rows - 1) * GRID_GAP + GRID_BORDER;
+    var availW = boardWrapEl.clientWidth - BOARD_EDGE_MARGIN - overheadW;
+    var availH = boardWrapEl.clientHeight - BOARD_EDGE_MARGIN - overheadH;
     if (!availW || !availH) return;
 
     var byWidth = Math.floor(availW / state.cols);
