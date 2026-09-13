@@ -39,6 +39,8 @@
   var timerEl = document.getElementById("timer");
   var resetBtn = document.getElementById("reset-btn");
   var diffButtons = document.querySelectorAll(".diff-btn");
+  var difficultyEl = document.getElementById("difficulty");
+  var diffToggle = document.getElementById("diff-toggle");
   var headingEl = document.getElementById("heading");
   var hintEl = document.getElementById("hint");
   var langBtn = document.getElementById("lang-btn");
@@ -617,6 +619,11 @@
     diffButtons.forEach(function (btn) {
       btn.textContent = t[btn.dataset.level];
     });
+    updateDiffToggleLabel();
+  }
+
+  function updateDiffToggleLabel() {
+    diffToggle.textContent = I18N[state.lang][state.level] + " ▾";
   }
 
   function setLanguage(lang) {
@@ -635,7 +642,13 @@
       diffButtons.forEach(function (b) { b.classList.remove("active"); });
       btn.classList.add("active");
       init(btn.dataset.level);
+      updateDiffToggleLabel();
+      difficultyEl.classList.remove("open");
     });
+  });
+
+  diffToggle.addEventListener("click", function () {
+    difficultyEl.classList.toggle("open");
   });
 
   langBtn.addEventListener("click", function () {

@@ -114,6 +114,21 @@ h1 {
   justify-content: center;
 }
 
+/* Compact pill that replaces the 3 difficulty buttons on phones (see the
+   max-width:480px query below) — tapping it reveals them, tapping a
+   choice collapses back down, maximizing board space in between. */
+.diff-toggle {
+  display: none;
+  border: none;
+  background: #b6b6b6;
+  color: #333;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .diff-btn {
   border: none;
   padding: 6px 10px;
@@ -308,6 +323,22 @@ h1 {
 @media (max-width: 480px) {
   h1 {
     font-size: 18px;
+  }
+
+  /* Give the board as much room as possible on a phone: collapse the
+     difficulty picker down to a small pill, and drop the hint text
+     entirely (long-press/double-click are discoverable by touch anyway). */
+  .diff-toggle {
+    display: inline-flex;
+  }
+  .difficulty {
+    display: none;
+  }
+  .difficulty.open {
+    display: flex;
+  }
+  .hint {
+    display: none;
   }
 }
 
