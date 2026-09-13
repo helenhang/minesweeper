@@ -15,14 +15,14 @@
 </head>
 <body>
   <div class="game">
-    <div class="controls">
+    <button class="float-toggle" id="float-toggle" title="Show controls">☰</button>
+    <div class="controls" id="controls">
       <div class="top-row">
         <h1 id="heading">扫雷 Minesweeper</h1>
         <button class="lang-btn" id="lang-btn" title="Switch language">EN</button>
       </div>
 
       <div class="toolbar">
-        <button class="diff-toggle" id="diff-toggle">初级 9×9 ▾</button>
         <div class="difficulty" id="difficulty">
           <button class="diff-btn active" data-level="beginner">初级 9×9</button>
           <button class="diff-btn" data-level="intermediate">中级 16×16</button>

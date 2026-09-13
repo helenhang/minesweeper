@@ -39,11 +39,11 @@
   var timerEl = document.getElementById("timer");
   var resetBtn = document.getElementById("reset-btn");
   var diffButtons = document.querySelectorAll(".diff-btn");
-  var difficultyEl = document.getElementById("difficulty");
-  var diffToggle = document.getElementById("diff-toggle");
   var headingEl = document.getElementById("heading");
   var hintEl = document.getElementById("hint");
   var langBtn = document.getElementById("lang-btn");
+  var controlsEl = document.getElementById("controls");
+  var floatToggle = document.getElementById("float-toggle");
 
   boardEl.addEventListener("animationend", function (e) {
     if (e.animationName === "boardShake") boardEl.classList.remove("shake");
@@ -619,11 +619,6 @@
     diffButtons.forEach(function (btn) {
       btn.textContent = t[btn.dataset.level];
     });
-    updateDiffToggleLabel();
-  }
-
-  function updateDiffToggleLabel() {
-    diffToggle.textContent = I18N[state.lang][state.level] + " ▾";
   }
 
   function setLanguage(lang) {
@@ -635,6 +630,7 @@
   resetBtn.addEventListener("click", function () {
     playResetSound();
     init(state.level);
+    closeControls();
   });
 
   diffButtons.forEach(function (btn) {
@@ -642,17 +638,24 @@
       diffButtons.forEach(function (b) { b.classList.remove("active"); });
       btn.classList.add("active");
       init(btn.dataset.level);
-      updateDiffToggleLabel();
-      difficultyEl.classList.remove("open");
+      closeControls();
     });
-  });
-
-  diffToggle.addEventListener("click", function () {
-    difficultyEl.classList.toggle("open");
   });
 
   langBtn.addEventListener("click", function () {
     setLanguage(state.lang === "zh" ? "en" : "zh");
+  });
+
+  // On phones the controls (title/difficulty/status bar) float over the
+  // board instead of taking permanent space — this button shows/hides them.
+  function closeControls() {
+    controlsEl.classList.remove("open");
+    floatToggle.textContent = "☰";
+  }
+
+  floatToggle.addEventListener("click", function () {
+    var open = controlsEl.classList.toggle("open");
+    floatToggle.textContent = open ? "✕" : "☰";
   });
 
   setLanguage(detectInitialLang());

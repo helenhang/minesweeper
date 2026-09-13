@@ -48,6 +48,25 @@ body {
   flex-shrink: 0;
 }
 
+/* On phones (see the media queries below) the whole controls block becomes
+   a floating drawer instead of permanent chrome, so the board can use the
+   entire screen. This button is the only thing that's always on screen. */
+.float-toggle {
+  display: none;
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  right: max(10px, env(safe-area-inset-right));
+  z-index: 60;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--cell-border-dark);
+  background: rgba(192, 192, 192, 0.95);
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
 /* The board should use the full screen width (that's the whole point on a
    tablet), but the chrome around it (title, difficulty, status bar) stays
    a tidy, centered widget instead of stretching edge-to-edge with it. */
@@ -112,21 +131,6 @@ h1 {
   border-radius: 8px;
   max-width: 100%;
   justify-content: center;
-}
-
-/* Compact pill that replaces the 3 difficulty buttons on phones (see the
-   max-width:480px query below) — tapping it reveals them, tapping a
-   choice collapses back down, maximizing board space in between. */
-.diff-toggle {
-  display: none;
-  border: none;
-  background: #b6b6b6;
-  color: #333;
-  padding: 5px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
 }
 
 .diff-btn {
@@ -325,17 +329,29 @@ h1 {
     font-size: 18px;
   }
 
-  /* Give the board as much room as possible on a phone: collapse the
-     difficulty picker down to a small pill, and drop the hint text
-     entirely (long-press/double-click are discoverable by touch anyway). */
-  .diff-toggle {
-    display: inline-flex;
+  /* Give the board the ENTIRE screen: the whole controls block (title,
+     difficulty, status bar) becomes a floating drawer that overlays on top
+     instead of sitting permanently above the board. The float-toggle
+     button is the only thing left on screen when it's closed. */
+  .float-toggle {
+    display: block;
   }
-  .difficulty {
-    display: none;
+  .controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 55;
+    background: var(--bg);
+    padding: max(12px, env(safe-area-inset-top)) 12px 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    max-height: 80vh;
+    overflow-y: auto;
+    transform: translateY(-100%);
+    transition: transform 0.22s ease;
   }
-  .difficulty.open {
-    display: flex;
+  .controls.open {
+    transform: translateY(0);
   }
   .hint {
     display: none;
@@ -347,21 +363,31 @@ h1 {
    much of that scarce height as possible — this matters most on Expert. */
 @media (orientation: landscape) and (max-height: 500px) {
   /* A phone's short edge becomes the height here, and it's small to begin
-     with — stacking the chrome above the board (like portrait does) leaves
-     almost nothing for the board. Put the chrome in a sidebar instead, so
-     the board gets the device's full height, not height-minus-chrome. */
+     with. Same floating-drawer treatment as portrait: the board gets the
+     entire screen, controls overlay on top only when the toggle is tapped. */
   .game {
-    flex-direction: row;
     padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right))
       max(6px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
-    gap: 8px;
+  }
+  .float-toggle {
+    display: block;
   }
   .controls {
-    width: 132px;
-    max-width: 132px;
-    flex-shrink: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 55;
+    background: var(--bg);
+    padding: max(8px, env(safe-area-inset-top)) 12px 10px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    max-height: 85vh;
     overflow-y: auto;
-    gap: 4px;
+    transform: translateY(-100%);
+    transition: transform 0.22s ease;
+  }
+  .controls.open {
+    transform: translateY(0);
   }
   .top-row,
   .toolbar,
@@ -369,53 +395,30 @@ h1 {
     max-width: none;
   }
   .top-row {
-    margin-bottom: 0;
+    margin-bottom: 4px;
   }
   h1 {
-    font-size: 14px;
+    font-size: 15px;
     margin: 2px 0;
   }
-  .lang-btn {
-    position: static;
-    margin-left: auto;
-    padding: 3px 6px;
-    font-size: 10px;
-  }
   .toolbar {
-    margin-bottom: 0;
-    width: 100%;
-  }
-  .diff-toggle {
-    display: inline-flex;
-    width: 100%;
-    justify-content: center;
-  }
-  .difficulty {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-  }
-  .difficulty.open {
-    display: flex;
+    margin-bottom: 4px;
   }
   .diff-btn {
-    padding: 4px 8px;
+    padding: 4px 10px;
     font-size: 11px;
   }
   .status-bar {
-    flex-direction: column;
-    gap: 4px;
-    padding: 6px;
+    padding: 6px 8px;
     margin-bottom: 0;
   }
   .counter {
     font-size: 15px;
     padding: 2px 6px;
-    min-width: 0;
-    width: 100%;
+    min-width: 36px;
   }
   .face-btn {
-    width: 100%;
+    width: 26px;
     height: 26px;
     font-size: 15px;
   }
