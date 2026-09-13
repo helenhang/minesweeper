@@ -383,10 +383,20 @@ h1 {
   }
   .toolbar {
     margin-bottom: 0;
+    width: 100%;
+  }
+  .diff-toggle {
+    display: inline-flex;
+    width: 100%;
+    justify-content: center;
   }
   .difficulty {
+    display: none;
     flex-direction: column;
     width: 100%;
+  }
+  .difficulty.open {
+    display: flex;
   }
   .diff-btn {
     padding: 4px 8px;
