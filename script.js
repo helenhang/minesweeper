@@ -43,6 +43,13 @@
   var hintEl = document.getElementById("hint");
   var langBtn = document.getElementById("lang-btn");
 
+  boardEl.addEventListener("animationend", function (e) {
+    if (e.animationName === "boardShake") boardEl.classList.remove("shake");
+  });
+  resetBtn.addEventListener("animationend", function (e) {
+    if (e.animationName === "faceBounce") resetBtn.classList.remove("win-bounce");
+  });
+
   var state = {
     lang: "zh",
     level: "beginner",
@@ -424,10 +431,17 @@
     return r >= 0 && r < state.rows && c >= 0 && c < state.cols;
   }
 
+  var REVEAL_STEP_MS = 14;
+  var REVEAL_MAX_DELAY = 240; // cap so a huge cascade doesn't take forever to finish
+
   function floodReveal(startR, startC) {
     var stack = [[startR, startC]];
     var seen = new Set();
+    var order = [];
 
+    // Game state updates happen synchronously (win/loss checks depend on
+    // them right after this returns) — only the visual reveal is staggered
+    // below, purely for a nicer cascading look.
     while (stack.length) {
       var pos = stack.pop();
       var r = pos[0], c = pos[1];
@@ -440,12 +454,28 @@
 
       cell.revealed = true;
       state.revealedCount++;
-      renderCellRevealed(r, c);
+      order.push(pos);
 
       if (cell.adjacent === 0) {
         forEachNeighbor(r, c, function (nr, nc) {
           if (!state.grid[nr][nc].revealed) stack.push([nr, nc]);
         });
+      }
+    }
+
+    animateReveal(order);
+  }
+
+  function animateReveal(order) {
+    for (var i = 0; i < order.length; i++) {
+      var pos = order[i];
+      var delay = Math.min(i * REVEAL_STEP_MS, REVEAL_MAX_DELAY);
+      if (delay === 0) {
+        renderCellRevealed(pos[0], pos[1]);
+      } else {
+        setTimeout((function (r, c) {
+          return function () { renderCellRevealed(r, c); };
+        })(pos[0], pos[1]), delay);
       }
     }
   }
@@ -464,17 +494,27 @@
   }
 
   function revealAllMines(explodedR, explodedC) {
+    boardEl.classList.remove("shake");
+    void boardEl.offsetWidth; // restart the shake if one is already mid-animation
+    boardEl.classList.add("shake");
+
     for (var r = 0; r < state.rows; r++) {
       for (var c = 0; c < state.cols; c++) {
         var cell = state.grid[r][c];
         var el = state.cellEls[r][c];
         if (cell.mine) {
           cell.revealed = true;
-          el.classList.add("revealed", "mine");
-          el.textContent = "💣";
-          if (r === explodedR && c === explodedC) {
-            el.classList.add("exploded");
-          }
+          // Ripple outward from the mine that was actually triggered, like
+          // a little chain of explosions instead of everything at once.
+          var dist = Math.max(Math.abs(r - explodedR), Math.abs(c - explodedC));
+          var delay = Math.min(dist * 45, 320);
+          (function (el, r, c, isExploded) {
+            setTimeout(function () {
+              el.classList.add("revealed", "mine");
+              el.textContent = "💣";
+              if (isExploded) el.classList.add("exploded");
+            }, delay);
+          })(el, r, c, r === explodedR && c === explodedC);
         } else if (cell.flagged && !cell.mine) {
           el.textContent = "❌";
         }
@@ -511,7 +551,12 @@
     state.won = won;
     stopTimer();
     setFace(won ? "😎" : "😵");
-    if (won) playWinSound();
+    if (won) {
+      playWinSound();
+      resetBtn.classList.remove("win-bounce");
+      void resetBtn.offsetWidth;
+      resetBtn.classList.add("win-bounce");
+    }
   }
 
   function updateMineCounter() {
